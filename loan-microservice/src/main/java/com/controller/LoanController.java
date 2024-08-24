@@ -21,12 +21,18 @@ import com.service.LoanService;
 public class LoanController {
 @Autowired
 LoanService loanService;
-
-/*@GetMapping("/type/{typeOfLoan}")
-public ResponseEntity<List<Loan>> getLoansByType(@PathVariable("typeOfLoan") LoanType typeOfLoan) {
-    List<Loan> loans = loanService.getAllLoansByType(typeOfLoan);
+@GetMapping("/type/{typeOfLoan}")
+public ResponseEntity<List<Loan>> getLoansByType(@PathVariable("typeOfLoan") String typeOfLoan) {
+    LoanType loanType;
+    try {
+        loanType = LoanType.valueOf(typeOfLoan.toUpperCase());
+    } catch (IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body(null);
+    }
+    List<Loan> loans = loanService.getAllLoansByType(loanType);
     return ResponseEntity.ok(loans);
-}*/
+}
+
 
 @GetMapping("/types")
 public List<Loan> showAllTypeOfLoans() {

@@ -27,4 +27,9 @@ public List<Loan> listAllLoans() {
 	
 	return loanRepository.findAll();
 }
+
+public List<Loan> getLoansByType(LoanType loanType) {
+	// TODO Auto-generated method stub
+	return null;
+}
 }
