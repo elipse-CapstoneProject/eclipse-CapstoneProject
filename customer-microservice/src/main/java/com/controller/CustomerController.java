@@ -1,26 +1,23 @@
 package com.controller;
-import java.net.URI;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
+import com.exception.CustomException;
 import com.model.Customer;
-import com.model.Loan;
-import com.model.Loan.LoanType;
 import com.model.Login;
 import com.service.CustomerService;
-
 
 import jakarta.validation.Valid;
 
@@ -28,22 +25,23 @@ import jakarta.validation.Valid;
 @Validated
 @RequestMapping("/customers")
 public class CustomerController {
-private static final URI LOAN_SERVICE_URL = null;
 @Autowired
 CustomerService customerService;
 @Autowired
 RestTemplate restTemplate;
-
+//For Register
 @PostMapping
 public ResponseEntity<?> registerCustomer(@Valid @RequestBody Customer customer) {
 	System.out.println(customer.getCustomerName());
     Customer savedCustomer = customerService.addNewCustomer(customer);
     return new ResponseEntity<>(savedCustomer, HttpStatus.OK); 
 }
-
+//Login
 @PostMapping("/login")
 public ResponseEntity<?> loginCustomer(@Valid @RequestBody Login login) {
+	System.out.println("customer is calling");
     Customer customer = customerService.authenticate(login.getEmail(), login.getPassword());
+    System.out.println(customer.getEmail());
     if (customer != null) {
         return ResponseEntity.ok(customer);
     } else {
@@ -76,9 +74,25 @@ public ResponseEntity<String> getAvailableLoanOptions() {
     String loanOptions = restTemplate.getForObject(baseUrl, String.class);
     return ResponseEntity.ok(loanOptions);
 }
-
-
+//applying for loan
+@PostMapping("/{customerId}/loan-applications")
+public ResponseEntity<Customer> applyForLoan(
+        @PathVariable("customerId") Long customerId,
+        @RequestParam Integer loanId) {
+    try {
+        Customer customer = customerService.applyForLoan(customerId, loanId);
+        return new ResponseEntity<>(customer, HttpStatus.CREATED);
+    } catch (CustomException e) {
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+    }
 }
+
+@ExceptionHandler(CustomException.class)
+public ResponseEntity<String> handleCustomerNotFoundException(CustomException ex) {
+    return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+}
+}
+
 
 
 

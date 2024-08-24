@@ -1,10 +1,14 @@
 package com.model;
 
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 @Entity
 @Table(name="customer")
@@ -38,6 +42,9 @@ public class Customer {
 
 	    @Column(name = "address", columnDefinition = "TEXT")
 	    private String address;
+	    
+	   @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+	    private List<LoanApplicationStatus> loanApplications;
 
 		public Long getCustomerId() {
 			return customerId;
@@ -111,10 +118,19 @@ public class Customer {
 			this.address = address;
 		}
 
+		public List<LoanApplicationStatus> getLoanApplications() {
+			return loanApplications;
+		}
+
+		public void setLoanApplications(List<LoanApplicationStatus> loanApplications) {
+			this.loanApplications = loanApplications;
+		}
+
 		public Customer(String customerName, String email, String dateOfBirth, String gender,
-				String password, String phoneNumber, String panCardNumber, String address) {
-			
+				String password, String phoneNumber, String panCardNumber, String address,
+				List<LoanApplicationStatus> loanApplications) {
 			super();
+			
 			this.customerName = customerName;
 			this.email = email;
 			this.dateOfBirth = dateOfBirth;
@@ -123,6 +139,7 @@ public class Customer {
 			this.phoneNumber = phoneNumber;
 			this.panCardNumber = panCardNumber;
 			this.address = address;
+			this.loanApplications = loanApplications;
 		}
 
 		public Customer() {
@@ -137,7 +154,8 @@ public class Customer {
 					+ ", phoneNumber=" + phoneNumber + ", panCardNumber=" + panCardNumber + ", address=" + address
 					+ "]";
 		}
-	    
-	    
+
+		
+		
 	    
 }

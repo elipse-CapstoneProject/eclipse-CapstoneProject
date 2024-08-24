@@ -6,16 +6,17 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 
-/*@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
@@ -28,7 +29,7 @@ public class GlobalExceptionHandler {
             String errorMessage = violation.getMessage();
             details.add(propertyName + " | " + errorMessage);
         }
-       /* ErrorResponse error = new ErrorResponse("Validation Failed", details);
+        ErrorResponse error = new ErrorResponse("Validation Failed", details);
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
@@ -42,6 +43,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
         List<String> details = new ArrayList<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
@@ -52,5 +54,13 @@ public class GlobalExceptionHandler {
         ErrorResponse error = new ErrorResponse("Validation Failed", details);
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<String> handleCustomerNotFoundException(CustomException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<String> handleResponseStatusException(ResponseStatusException ex) {
+        return new ResponseEntity<>(ex.getReason(), ex.getStatusCode());
+    }
 }
-}*/
