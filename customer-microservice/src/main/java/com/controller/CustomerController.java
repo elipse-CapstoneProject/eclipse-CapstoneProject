@@ -40,24 +40,28 @@ public ResponseEntity<?> registerCustomer(@Valid @RequestBody Customer customer)
     return new ResponseEntity<>(savedCustomer, HttpStatus.OK); 
 }*/
 
-/*@PostMapping
+@PostMapping
 public ResponseEntity<?> registerCustomer(@Valid @RequestBody Customer customer) {
     System.out.println(customer.getCustomerName());
 
-    // Check if customer already exists
-    if (customerService.existsByEmail(customer.getEmail())) {
-        throw new EntityAlreadyExistsException("A customer with this email already exists");
+    // Check if a customer with the same PAN card number or email already exists
+    boolean isPanCardNumberExists = customerService.existsByPanCardNumber(customer.getPanCardNumber());
+    boolean isEmailExists = customerService.existsByEmail(customer.getEmail());
+
+    if (isPanCardNumberExists) {
+        return new ResponseEntity<>("Customer with the same PAN card number already exists", HttpStatus.CONFLICT);
     }
 
-    // Additional checks for required fields or entities
-    if (customer.getEmail() == null || customer.getPassword() == null) {
-        throw new RequiredEntityNotFoundException("Email and password must be provided");
+    if (isEmailExists) {
+        return new ResponseEntity<>("Customer with the same email address already exists", HttpStatus.CONFLICT);
     }
 
-    // Save the new customer
+    // Save the new customer if no duplicates are found
     Customer savedCustomer = customerService.addNewCustomer(customer);
     return new ResponseEntity<>(savedCustomer, HttpStatus.CREATED);
-}*/
+}
+
+
 //Login
 @PostMapping("/login")
 public ResponseEntity<?> loginCustomer(@Valid @RequestBody Login login) {

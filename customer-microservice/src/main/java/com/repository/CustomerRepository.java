@@ -17,8 +17,9 @@ public interface CustomerRepository extends CrudRepository<Customer, Integer> {
 
 	//Optional<Customer> findById(Long customerId);
 	
-    boolean existsByEmail(String email);
 
+    boolean existsByPanCardNumber(String panCardNumber);
+    boolean existsByEmail(String email);
 	
 
 

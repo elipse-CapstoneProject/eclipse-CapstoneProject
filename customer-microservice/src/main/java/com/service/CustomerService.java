@@ -26,21 +26,27 @@ CustomerRepository customerRepository;
 LoanApplicationStatusRepository loanApplicationStatusRepository;
 
 
-public boolean existsByEmail(String email) {
-	// TODO Auto-generated method stub
-    return customerRepository.existsByEmail(email);
 
-}
-public Customer addNewCustomer(Customer customer) {
-    return customerRepository.save(customer);
-}
 /*
+ regiter//
 public Customer addNewCustomer(Customer customer) {
 	Customer customer1=customerRepository.save(customer);
 	return customer1;
 }*/
 
+public boolean existsByPanCardNumber(String panCardNumber) {
+    return customerRepository.existsByPanCardNumber(panCardNumber);
+}
 
+public boolean existsByEmail(String email) {
+    return customerRepository.existsByEmail(email);
+}
+
+public Customer addNewCustomer(@Valid Customer customer) {
+	// TODO Auto-generated method stub
+	 return customerRepository.save(customer);}
+
+//login
 public Customer authenticate(String email, String password) {
 	 Customer customer = customerRepository.findByEmail(email);
 	    if (customer != null && customer.getPassword().equals(password)) {
@@ -48,6 +54,8 @@ public Customer authenticate(String email, String password) {
 	    }
 	    return null;
 }
+
+
 
 
 /*public Iterable<Customer> listAllLoans() {
