@@ -1,8 +1,15 @@
 package com.model;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
 public class Login {
 
-	private String email;
+	@NotBlank(message = "Email is mandatory")
+    @Email(message = "Invalid email format")
+    private String email;
+
+    @NotBlank(message = "Password is mandatory")
     private String password;
 	public String getEmail() {
 		return email;

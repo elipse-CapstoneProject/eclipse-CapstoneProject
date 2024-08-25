@@ -24,10 +24,21 @@ public class CustomerService {
 CustomerRepository customerRepository;
 @Autowired
 LoanApplicationStatusRepository loanApplicationStatusRepository;
+
+
+public boolean existsByEmail(String email) {
+	// TODO Auto-generated method stub
+    return customerRepository.existsByEmail(email);
+
+}
+public Customer addNewCustomer(Customer customer) {
+    return customerRepository.save(customer);
+}
+/*
 public Customer addNewCustomer(Customer customer) {
 	Customer customer1=customerRepository.save(customer);
 	return customer1;
-}
+}*/
 
 
 public Customer authenticate(String email, String password) {
@@ -37,6 +48,7 @@ public Customer authenticate(String email, String password) {
 	    }
 	    return null;
 }
+
 
 /*public Iterable<Customer> listAllLoans() {
 	
@@ -49,7 +61,7 @@ public boolean existsById(Long customerId) {
 	return false;
 }*/
 
-@Transactional
+/*@Transactional
 public Customer applyForLoan(Long customerId, Integer loanId) throws CustomException {
     Customer customer = customerRepository.findById(customerId)
             .orElseThrow(() -> new CustomException("Customer with ID " + customerId + " not found"));
@@ -63,6 +75,6 @@ public Customer applyForLoan(Long customerId, Integer loanId) throws CustomExcep
     loanApplicationStatusRepository.save(application);
 
     return customer;
-}
+}*/
 
 }

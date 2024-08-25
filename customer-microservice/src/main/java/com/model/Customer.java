@@ -43,9 +43,9 @@ public class Customer {
 	    @Column(name = "address", columnDefinition = "TEXT")
 	    private String address;
 	    
-	   @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+	 /*   @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
 	    private List<LoanApplicationStatus> loanApplications;
-
+*/
 		public Long getCustomerId() {
 			return customerId;
 		}
@@ -118,13 +118,13 @@ public class Customer {
 			this.address = address;
 		}
 
-		public List<LoanApplicationStatus> getLoanApplications() {
+	/*	public List<LoanApplicationStatus> getLoanApplications() {
 			return loanApplications;
 		}
 
 		public void setLoanApplications(List<LoanApplicationStatus> loanApplications) {
 			this.loanApplications = loanApplications;
-		}
+		}*/
 
 		public Customer(String customerName, String email, String dateOfBirth, String gender,
 				String password, String phoneNumber, String panCardNumber, String address,
@@ -139,7 +139,7 @@ public class Customer {
 			this.phoneNumber = phoneNumber;
 			this.panCardNumber = panCardNumber;
 			this.address = address;
-			this.loanApplications = loanApplications;
+			//this.loanApplications = loanApplications;
 		}
 
 		public Customer() {
@@ -155,7 +155,11 @@ public class Customer {
 					+ "]";
 		}
 
-		
+		public Object getLoanApplications() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
 		
 	    
 }

@@ -11,13 +11,12 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class CustomerGlobalExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -54,13 +53,20 @@ public class GlobalExceptionHandler {
         ErrorResponse error = new ErrorResponse("Validation Failed", details);
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
-    @ExceptionHandler(CustomException.class)
-    public ResponseEntity<String> handleCustomerNotFoundException(CustomException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
+   /* @ExceptionHandler(EntityAlreadyExistsException.class)
+    @ResponseBody
+    public ResponseEntity<String> handleEntityAlreadyExistsException(EntityAlreadyExistsException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
 
-    @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<String> handleResponseStatusException(ResponseStatusException ex) {
-        return new ResponseEntity<>(ex.getReason(), ex.getStatusCode());
-    }
+    @ExceptionHandler(RequiredEntityNotFoundException.class)
+    @ResponseBody
+    public ResponseEntity<String> handleRequiredEntityNotFoundException(RequiredEntityNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }*/
+    
 }
