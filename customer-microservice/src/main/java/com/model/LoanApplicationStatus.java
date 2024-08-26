@@ -23,15 +23,14 @@ public class LoanApplicationStatus {
     @Column(name="application_id")
     private Long applicationId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id", nullable = false, unique = false)
-    private Customer customer;
+    @Column(name="customer_id")
+    private Long customerId;
 
     @Column(name="loan_id",nullable = false)
     private Integer loanId;
 
     @Column(name = "application_date", nullable = false)
-    private Timestamp applicationDate;
+    private java.sql.Timestamp applicationDate;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -49,12 +48,12 @@ public class LoanApplicationStatus {
 		this.applicationId = applicationId;
 	}
 
-	public Customer getCustomer() {
-		return customer;
+	public Long getCustomerId() {
+		return customerId;
 	}
 
-	public void setCustomer(Customer customer) {
-		this.customer = customer;
+	public void setCustomerId(Long customerId) {
+		this.customerId = customerId;
 	}
 
 	public Integer getLoanId() {
@@ -65,12 +64,12 @@ public class LoanApplicationStatus {
 		this.loanId = loanId;
 	}
 
-	public Timestamp getApplicationDate() {
+	public java.sql.Timestamp getApplicationDate() {
 		return applicationDate;
 	}
 
-	public void setApplicationDate(Timestamp applicationDate) {
-		this.applicationDate = applicationDate;
+	public void setApplicationDate(java.sql.Timestamp timestamp) {
+		this.applicationDate = timestamp;
 	}
 
 	public Status getStatus() {
@@ -81,11 +80,11 @@ public class LoanApplicationStatus {
 		this.status = status;
 	}
 
-	public LoanApplicationStatus(Long applicationId, Customer customer, Integer loanId, Timestamp applicationDate,
+	public LoanApplicationStatus(Long applicationId, Long customerId, Integer loanId, java.sql.Timestamp applicationDate,
 			Status status) {
 		super();
 		this.applicationId = applicationId;
-		this.customer = customer;
+		this.customerId = customerId;
 		this.loanId = loanId;
 		this.applicationDate = applicationDate;
 		this.status = status;
@@ -98,14 +97,11 @@ public class LoanApplicationStatus {
 
 	@Override
 	public String toString() {
-		return "LoanApplicationStatus [applicationId=" + applicationId + ", customer=" + customer + ", loanId=" + loanId
-				+ ", applicationDate=" + applicationDate + ", status=" + status + "]";
+		return "LoanApplicationStatus [applicationId=" + applicationId + ", customerId=" + customerId + ", loanId="
+				+ loanId + ", applicationDate=" + applicationDate + ", status=" + status + "]";
 	}
 
-	public void setApplicationDate(java.sql.Timestamp timestamp) {
-		// TODO Auto-generated method stub
-		
-	}
+	
     
     
 }

@@ -1,23 +1,19 @@
 package com.service;
 
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
-import com.exception.CustomException;
+import com.controller.LoanApplicationRequest;
 import com.model.Customer;
-import com.model.Loan;
-import com.model.Loan.LoanType;
 import com.model.LoanApplicationStatus;
 import com.repository.CustomerRepository;
 import com.repository.LoanApplicationStatusRepository;
 
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
 @Service
@@ -27,10 +23,7 @@ CustomerRepository customerRepository;
 @Autowired
 LoanApplicationStatusRepository loanApplicationStatusRepository;
 
-
-
-
- //regiter
+ //register
 public boolean existsByPanCardNumber(String panCardNumber) {
     return customerRepository.existsByPanCardNumber(panCardNumber);
 }
@@ -55,18 +48,6 @@ public String authenticate(String email, String password) {
 
 
 /*
-
-public Iterable<Customer> listAllLoans() {
-	
-	return customerRepository.findAll();
-}
-
-
-public boolean existsById(Long customerId) {
-	// TODO Auto-generated method stub
-	return false;
-}*/
-/*
 @Transactional
 public Customer applyForLoan(Long customerId, Integer loanId) throws CustomException {
     Customer customer = customerRepository.findById(customerId)
@@ -83,4 +64,17 @@ public Customer applyForLoan(Long customerId, Integer loanId) throws CustomExcep
     return customer;
 }
 */
+
+//apply for loan
+
+public void applyForLoan(Long customerId, LoanApplicationStatus applicationStatus) {
+    // Save the loan application status
+    loanApplicationStatusRepository.save(applicationStatus);
 }
+}
+
+
+
+
+
+

@@ -1,4 +1,5 @@
 package com.controller;
+import java.sql.Timestamp;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
@@ -23,6 +25,7 @@ import com.exception.CustomException;
 import com.model.Customer;
 import com.model.Loan;
 import com.model.Loan.LoanType;
+import com.model.LoanApplicationStatus;
 import com.model.Login;
 import com.service.CustomerService;
 
@@ -36,6 +39,9 @@ public class CustomerController {
 CustomerService customerService;
 @Autowired
 RestTemplate restTemplate;
+
+private  String baseUrl = "http://loanservice/loans";
+
 
 //For Register
 @PostMapping
@@ -72,7 +78,6 @@ public ResponseEntity<?> loginCustomer(@Valid @RequestBody Login login) {
 
 
 
-private  String baseUrl = "http://loanservice/loans";
 // retrieving based on typeofloan
 @GetMapping("/type/{typeOfLoan}")
 public ResponseEntity<?> getLoanType(@PathVariable("typeOfLoan") LoanType typeOfLoan) {
@@ -141,6 +146,43 @@ public ResponseEntity<?> getAllLoans() {
         return new ResponseEntity<>("Error fetching loans: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
+//apply for loan
+@PostMapping("/{customerId}/apply")
+public ResponseEntity<String> applyForLoan(
+        @PathVariable Long customerId,
+        @RequestBody LoanApplicationRequest request) {
+    Integer loanId = request.getLoanId();
+    String url = baseUrl + "/" + loanId;
 
+    try {
+        ResponseEntity<Loan> response = restTemplate.getForEntity(url, Loan.class);
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            LoanApplicationStatus applicationStatus = new LoanApplicationStatus();
+            applicationStatus.setCustomerId(customerId);
+            applicationStatus.setLoanId(loanId);
+            applicationStatus.setApplicationDate(new Timestamp(System.currentTimeMillis()));
+            applicationStatus.setStatus(LoanApplicationStatus.Status.PENDING);
+
+            customerService.applyForLoan(customerId, applicationStatus);
+            return ResponseEntity.ok("Loan application submitted successfully.");
+        } else {
+            // Loan not found
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                 .body("Loan with ID " + loanId + " not found.");
+        }
+    } catch (HttpClientErrorException.NotFound e) {
+        // Handle case where the loan ID is not found
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                             .body("Loan with ID " + loanId + " not found.");
+    } catch (Exception e) {
+        // Handle other exceptions
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                             .body("An error occurred while applying for the loan: " + e.getMessage());
+    }
+}
 
 }
+
+
+

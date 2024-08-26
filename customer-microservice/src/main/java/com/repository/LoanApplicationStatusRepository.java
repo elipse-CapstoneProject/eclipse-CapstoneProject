@@ -3,9 +3,9 @@ package com.repository;
 import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
 import com.model.LoanApplicationStatus;
-
-public interface LoanApplicationStatusRepository extends CrudRepository<LoanApplicationStatus, Long> {
-	//List<LoanApplicationStatus> findByCustomerId(Long customerId);
+@Repository
+public interface LoanApplicationStatusRepository extends CrudRepository<LoanApplicationStatus, Integer> {
 }

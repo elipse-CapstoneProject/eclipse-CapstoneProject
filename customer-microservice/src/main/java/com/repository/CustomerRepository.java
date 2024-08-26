@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import com.model.Customer;
 import com.model.Loan;
 import com.model.Loan.LoanType;
+import com.model.LoanApplicationStatus;
 
 @Repository
 public interface CustomerRepository extends CrudRepository<Customer, Integer> {
@@ -19,6 +20,8 @@ public interface CustomerRepository extends CrudRepository<Customer, Integer> {
     //register
     boolean existsByPanCardNumber(String panCardNumber);
     boolean existsByEmail(String email);
+
+	void save(LoanApplicationStatus loanApplication);
 	
 
 
