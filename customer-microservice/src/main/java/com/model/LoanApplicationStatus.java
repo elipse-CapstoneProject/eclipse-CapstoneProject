@@ -24,7 +24,7 @@ public class LoanApplicationStatus {
     private Long applicationId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id", nullable = false)
+    @JoinColumn(name = "customer_id", nullable = false, unique = false)
     private Customer customer;
 
     @Column(name="loan_id",nullable = false)

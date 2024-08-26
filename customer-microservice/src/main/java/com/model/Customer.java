@@ -5,6 +5,7 @@ import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -43,9 +44,9 @@ public class Customer {
 	    @Column(name = "address", columnDefinition = "TEXT")
 	    private String address;
 	    
-	 /*   @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
-	    private List<LoanApplicationStatus> loanApplications;
-*/
+	  /*  @OneToMany(mappedBy="customer",cascade=CascadeType.ALL,fetch = FetchType.EAGER)	
+		private List<LoanApplicationStatus> loanstatus;*/
+
 		public Long getCustomerId() {
 			return customerId;
 		}
@@ -118,19 +119,19 @@ public class Customer {
 			this.address = address;
 		}
 
-	/*	public List<LoanApplicationStatus> getLoanApplications() {
-			return loanApplications;
+	/*	public List<LoanApplicationStatus> getLoanstatus() {
+			return loanstatus;
 		}
 
-		public void setLoanApplications(List<LoanApplicationStatus> loanApplications) {
-			this.loanApplications = loanApplications;
+		public void setLoanstatus(List<LoanApplicationStatus> loanstatus) {
+			this.loanstatus = loanstatus;
 		}*/
 
-		public Customer(String customerName, String email, String dateOfBirth, String gender,
+		public Customer( String customerName, String email, String dateOfBirth, String gender,
 				String password, String phoneNumber, String panCardNumber, String address,
-				List<LoanApplicationStatus> loanApplications) {
+				List<LoanApplicationStatus> loanstatus) {
 			super();
-			
+			//this.customerId = customerId;
 			this.customerName = customerName;
 			this.email = email;
 			this.dateOfBirth = dateOfBirth;
@@ -139,7 +140,7 @@ public class Customer {
 			this.phoneNumber = phoneNumber;
 			this.panCardNumber = panCardNumber;
 			this.address = address;
-			//this.loanApplications = loanApplications;
+		//	this.loanstatus = loanstatus;
 		}
 
 		public Customer() {
@@ -154,12 +155,8 @@ public class Customer {
 					+ ", phoneNumber=" + phoneNumber + ", panCardNumber=" + panCardNumber + ", address=" + address
 					+ "]";
 		}
-
-		public Object getLoanApplications() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
+	
+		
 		
 	    
 }

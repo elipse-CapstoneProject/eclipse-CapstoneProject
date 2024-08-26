@@ -57,16 +57,6 @@ public class CustomerGlobalExceptionHandler {
     public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
         return ResponseEntity.badRequest().body(ex.getMessage());
     }
-   /* @ExceptionHandler(EntityAlreadyExistsException.class)
-    @ResponseBody
-    public ResponseEntity<String> handleEntityAlreadyExistsException(EntityAlreadyExistsException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
-    }
-
-    @ExceptionHandler(RequiredEntityNotFoundException.class)
-    @ResponseBody
-    public ResponseEntity<String> handleRequiredEntityNotFoundException(RequiredEntityNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-    }*/
+   
     
 }

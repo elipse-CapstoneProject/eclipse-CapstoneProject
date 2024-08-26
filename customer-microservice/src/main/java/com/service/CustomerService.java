@@ -5,6 +5,8 @@ import java.time.Instant;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.exception.CustomException;
@@ -27,13 +29,8 @@ LoanApplicationStatusRepository loanApplicationStatusRepository;
 
 
 
-/*
- regiter//
-public Customer addNewCustomer(Customer customer) {
-	Customer customer1=customerRepository.save(customer);
-	return customer1;
-}*/
 
+ //regiter
 public boolean existsByPanCardNumber(String panCardNumber) {
     return customerRepository.existsByPanCardNumber(panCardNumber);
 }
@@ -43,22 +40,23 @@ public boolean existsByEmail(String email) {
 }
 
 public Customer addNewCustomer(@Valid Customer customer) {
-	// TODO Auto-generated method stub
 	 return customerRepository.save(customer);}
 
+
 //login
-public Customer authenticate(String email, String password) {
+public String authenticate(String email, String password) {
 	 Customer customer = customerRepository.findByEmail(email);
 	    if (customer != null && customer.getPassword().equals(password)) {
-	        return customer;
+	        return ("login successful");
 	    }
 	    return null;
 }
 
 
 
+/*
 
-/*public Iterable<Customer> listAllLoans() {
+public Iterable<Customer> listAllLoans() {
 	
 	return customerRepository.findAll();
 }
@@ -68,8 +66,8 @@ public boolean existsById(Long customerId) {
 	// TODO Auto-generated method stub
 	return false;
 }*/
-
-/*@Transactional
+/*
+@Transactional
 public Customer applyForLoan(Long customerId, Integer loanId) throws CustomException {
     Customer customer = customerRepository.findById(customerId)
             .orElseThrow(() -> new CustomException("Customer with ID " + customerId + " not found"));
@@ -83,6 +81,6 @@ public Customer applyForLoan(Long customerId, Integer loanId) throws CustomExcep
     loanApplicationStatusRepository.save(application);
 
     return customer;
-}*/
-
+}
+*/
 }

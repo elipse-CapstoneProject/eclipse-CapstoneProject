@@ -13,11 +13,10 @@ import com.model.Loan.LoanType;
 @Repository
 public interface CustomerRepository extends CrudRepository<Customer, Integer> {
    
-	Customer findByEmail(String email);
-
+	 Customer findByEmail(String email);
 	//Optional<Customer> findById(Long customerId);
 	
-
+    //register
     boolean existsByPanCardNumber(String panCardNumber);
     boolean existsByEmail(String email);
 	
