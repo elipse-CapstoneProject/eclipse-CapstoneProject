@@ -40,31 +40,38 @@ RestTemplate restTemplate;
 private  String baseUrl = "http://loanservice/loans";
 private static final Logger logger = LoggerFactory.getLogger(CustomerService.class);
 
- //register
 public boolean existsByPanCardNumber(String panCardNumber) {
-    return customerRepository.existsByPanCardNumber(panCardNumber);
+    boolean exists = customerRepository.existsByPanCardNumber(panCardNumber);
+    logger.debug("Check if PAN Card Number {} exists: {}", panCardNumber, exists);
+    return exists;
 }
 
 public boolean existsByEmail(String email) {
-    return customerRepository.existsByEmail(email);
+    boolean exists = customerRepository.existsByEmail(email);
+    logger.debug("Check if Email {} exists: {}", email, exists);
+    return exists;
 }
 
 public Customer addNewCustomer(@Valid Customer customer) {
-	 return customerRepository.save(customer);}
-
-
-//login
-public String authenticate(String email, String password) {
-	 Customer customer = customerRepository.findByEmail(email);
-	    if (customer != null && customer.getPassword().equals(password)) {
-	        return ("login successful");
-	    }
-	    return null;
+    logger.debug("Adding new customer with Email: {}", customer.getEmail());
+    return customerRepository.save(customer);
 }
-//retrieving typeofloan
+
+public String authenticate(String email, String password) {
+    logger.debug("Authenticating user with Email: {}", email);
+    Customer customer = customerRepository.findByEmail(email);
+    if (customer != null && customer.getPassword().equals(password)) {
+        logger.info("Authentication successful for Email: {}", email);
+        return "login successful";
+    }
+    logger.warn("Authentication failed for Email: {}", email);
+    return null;
+}
+
 public List<Loan> getLoansByType(String typeOfLoan) {
     String typeOfLoanUpperCase = typeOfLoan.toUpperCase();
     String url = baseUrl + "/type/" + typeOfLoanUpperCase;
+    logger.debug("Fetching loans from URL: {}", url);
     try {
         ResponseEntity<List<Loan>> response = restTemplate.exchange(
                 url,
@@ -75,21 +82,23 @@ public List<Loan> getLoansByType(String typeOfLoan) {
         if (response.getStatusCode() == HttpStatus.NO_CONTENT || response.getBody().isEmpty()) {
             throw new LoanNotFoundException("No loans found for type: " + typeOfLoanUpperCase);
         } else if (response.getStatusCode() == HttpStatus.OK) {
+            logger.info("Loans retrieved successfully for type: {}", typeOfLoanUpperCase);
             return response.getBody();
         } else {
             throw new IllegalStateException("Invalid type" + response.getStatusCode());
         }
     } catch (LoanNotFoundException e) {
-        throw e; 
+        logger.warn("No loans found for type: {}", typeOfLoanUpperCase);
+        throw e;
     } catch (Exception e) {
+        logger.error("Error occurred while fetching loans for type: {}", typeOfLoanUpperCase, e);
         throw new RuntimeException("Error occurred while fetching loans for type " + typeOfLoanUpperCase, e);
     }
 }
 
-//retrieving all loans
-
 public List<Loan> getAllLoans() {
     String url = baseUrl + "/types";
+    logger.debug("Fetching all loans from URL: {}", url);
     try {
         ResponseEntity<List<Loan>> response = restTemplate.exchange(
                 url,
@@ -101,11 +110,13 @@ public List<Loan> getAllLoans() {
             if (response.getBody() == null || response.getBody().isEmpty()) {
                 throw new LoanNotFoundException("No loan records found");
             }
+            logger.info("All loans retrieved successfully");
             return response.getBody();
         } else {
             throw new IllegalStateException("Unexpected status code " + response.getStatusCode());
         }
     } catch (RestClientException e) {
+        logger.error("Error fetching loans: {}", e.getMessage(), e);
         throw new RuntimeException("Error fetching loans: " + e.getMessage(), e);
     }
 }

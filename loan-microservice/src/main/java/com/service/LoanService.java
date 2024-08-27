@@ -9,27 +9,21 @@ import org.springframework.stereotype.Service;
 import com.model.Loan;
 import com.model.Loan.LoanType;
 import com.repository.LoanRepository;
-
 @Service
 public class LoanService {
-@Autowired
-LoanRepository loanRepository;
 
-public List<Loan> getAllLoansByType(LoanType typeOfLoan) {
-    return loanRepository.findByTypeOfLoan(typeOfLoan);
-}
+    @Autowired
+    private LoanRepository loanRepository;
 
-public Optional<Loan> getLoanById(int loanId) {
-    return loanRepository.findById(loanId);
-}
+    public List<Loan> getAllLoansByType(Loan.LoanType typeOfLoan) {
+        return loanRepository.findByTypeOfLoan(typeOfLoan);
+    }
 
-public List<Loan> listAllLoans() {
-	
-	return loanRepository.findAll();
-}
+    public Optional<Loan> getLoanById(int loanId) {
+        return loanRepository.findById(loanId);
+    }
 
-public List<Loan> getLoansByType(LoanType loanType) {
-	// TODO Auto-generated method stub
-	return null;
-}
+    public List<Loan> listAllLoans() {
+        return (List<Loan>) loanRepository.findAll();
+    }
 }

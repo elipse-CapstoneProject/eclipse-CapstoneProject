@@ -16,43 +16,36 @@ import com.google.common.base.Optional;
 import com.model.Loan;
 import com.model.Loan.LoanType;
 import com.service.LoanService;
-
 @RestController
 @Validated
 @RequestMapping("/loans")
 public class LoanController {
-@Autowired
-LoanService loanService;
 
-//retrieving based on type
+    @Autowired
+    private LoanService loanService;
 
-@GetMapping("/type/{typeOfLoan}")
-public ResponseEntity<List<Loan>> getLoansByType(@PathVariable("typeOfLoan") String typeOfLoan) {
-    Loan.LoanType loanType;
-    try {
-        loanType = Loan.LoanType.valueOf(typeOfLoan.toUpperCase());
-    } catch (IllegalArgumentException e) {
-        throw new InvalidLoanTypeException(typeOfLoan);
+    @GetMapping("/type/{typeOfLoan}")
+    public ResponseEntity<List<Loan>> getLoansByType(@PathVariable("typeOfLoan") String typeOfLoan) {
+        Loan.LoanType loanType;
+        try {
+            loanType = Loan.LoanType.valueOf(typeOfLoan.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new InvalidLoanTypeException(typeOfLoan);
+        }
+        List<Loan> loans = loanService.getAllLoansByType(loanType);
+        return ResponseEntity.ok(loans);
     }
-    List<Loan> loans = loanService.getAllLoansByType(loanType);
-    return ResponseEntity.ok(loans);
+
+    @GetMapping("/types")
+    public ResponseEntity<List<Loan>> showAllTypeOfLoans() {
+        List<Loan> loanList = loanService.listAllLoans();
+        return ResponseEntity.ok(loanList);
+    }
+
+    @GetMapping("/id/{loanId}")
+    public ResponseEntity<Loan> getLoanById(@PathVariable("loanId") int loanId) {
+        Loan loan = loanService.getLoanById(loanId)
+                .orElseThrow(() -> new LoanNotFoundException("Loan ID " + loanId + " not found in the database"));
+        return ResponseEntity.ok(loan);
+    }
 }
-
-//retrieving all loans
-@GetMapping("/types")
-public List<Loan> showAllTypeOfLoans() {
-	List<Loan> loanList=loanService.listAllLoans();
-	return loanList;
-}
-
-
-//Retrieving  based on Id
-@GetMapping("/id/{loanId}")
-public Loan getLoanById(@PathVariable("loanId") int loanId) {
-    java.util.Optional<Loan> loan = loanService.getLoanById(loanId);
-    return loan.orElseThrow(() -> new LoanNotFoundException("Loan ID " + loanId + " not found in the database"));
-}
-
-}
-
-

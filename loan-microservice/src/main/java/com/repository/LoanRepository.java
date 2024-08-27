@@ -7,13 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import com.model.Loan;
 import com.model.Loan.LoanType;
-
 @Repository
-public interface LoanRepository extends CrudRepository<Loan, Integer>{
-   
-
-	List<Loan> findByTypeOfLoan(LoanType typeOfLoan);
-
-	List<Loan> findAll();
-
+public interface LoanRepository extends CrudRepository<Loan, Integer> {
+    List<Loan> findByTypeOfLoan(Loan.LoanType typeOfLoan);
 }

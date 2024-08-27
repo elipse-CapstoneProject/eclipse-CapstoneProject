@@ -37,103 +37,117 @@ import com.service.LoanApplicationStatusService;
 import jakarta.validation.Valid;
 
 @RestController
-@Validated
 @RequestMapping("/customers")
 public class CustomerController {
-@Autowired
-CustomerService customerService;
-@Autowired
-LoanApplicationStatusService loanApplicationStatusService;
-
-private static final Logger logger = LoggerFactory.getLogger(CustomerController.class);
-
-
-//For Register
-@PostMapping
-public ResponseEntity<?> registerCustomer(@Valid @RequestBody Customer customer) {
-
-    boolean isPanCardNumberExists = customerService.existsByPanCardNumber(customer.getPanCardNumber());
-    boolean isEmailExists = customerService.existsByEmail(customer.getEmail());
-    if (isPanCardNumberExists) {
-        return new ResponseEntity<>("Customer with the same registeration details already exists", HttpStatus.CONFLICT);
+    
+    private static final Logger logger = LoggerFactory.getLogger(CustomerController.class);
+    
+    private final CustomerService customerService;
+    private final LoanApplicationStatusService loanApplicationStatusService;
+    
+    public CustomerController(CustomerService customerService, LoanApplicationStatusService loanApplicationStatusService) {
+        this.customerService = customerService;
+        this.loanApplicationStatusService = loanApplicationStatusService;
     }
-    if (isEmailExists) {
-        return new ResponseEntity<>("Customer with the same gesiteration details already exists", HttpStatus.CONFLICT);
-    }
-    Customer savedCustomer = customerService.addNewCustomer(customer);
-    return new ResponseEntity<>(savedCustomer, HttpStatus.CREATED);
-}
-
-//Login
-@PostMapping("/login")
-public ResponseEntity<?> loginCustomer(@Valid @RequestBody Login login) {
-  if (login == null) {
-      throw new IllegalArgumentException("Login request cannot be null");
-  }
-  if (login.getEmail() == null || login.getPassword() == null) {
-      throw new IllegalArgumentException("Email and password must be provided");
-  }
-  String customer = customerService.authenticate(login.getEmail(), login.getPassword());
-  if (customer != null) {
-      return ResponseEntity.ok(customer);
-  } else {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
-  }
-}
-
-// retrieving based on typeofloan
-@GetMapping("/type/{typeOfLoan}")
-public ResponseEntity<?> getLoanType(@PathVariable("typeOfLoan") String typeOfLoan) {
-    try {
-        List<Loan> loans = customerService.getLoansByType(typeOfLoan);
-
-        if (loans.isEmpty()) {
-            return new ResponseEntity<>("No loan found", HttpStatus.NOT_FOUND);
-        } else {
-            return new ResponseEntity<>(loans, HttpStatus.OK);
+    
+    // Register
+    @PostMapping
+    public ResponseEntity<?> registerCustomer(@Valid @RequestBody Customer customer) {
+        logger.debug("Registering customer with PAN: {} and Email: {}", customer.getPanCardNumber(), customer.getEmail());
+        
+        boolean isPanCardNumberExists = customerService.existsByPanCardNumber(customer.getPanCardNumber());
+        boolean isEmailExists = customerService.existsByEmail(customer.getEmail());
+        
+        if (isPanCardNumberExists) {
+            logger.warn("Customer with PAN Card Number {} already exists", customer.getPanCardNumber());
+            return new ResponseEntity<>("Customer with the same registration details already exists", HttpStatus.CONFLICT);
         }
-    } catch (Exception e) {
-        return new ResponseEntity<>("Unexpected Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        if (isEmailExists) {
+            logger.warn("Customer with Email {} already exists", customer.getEmail());
+            return new ResponseEntity<>("Customer with the same registration details already exists", HttpStatus.CONFLICT);
+        }
+        
+        Customer savedCustomer = customerService.addNewCustomer(customer);
+        logger.info("Customer registered successfully with ID: {}", savedCustomer.getCustomerId());
+        return new ResponseEntity<>(savedCustomer, HttpStatus.CREATED);
+    }
+
+    // Login
+    @PostMapping("/login")
+    public ResponseEntity<?> loginCustomer(@Valid @RequestBody Login login) {
+        logger.debug("Login attempt for Email: {}", login.getEmail());
+
+        if (login == null || login.getEmail() == null || login.getPassword() == null) {
+            logger.error("Invalid login request");
+            throw new IllegalArgumentException("Email and password must be provided");
+        }
+        
+        String customer = customerService.authenticate(login.getEmail(), login.getPassword());
+        if (customer != null) {
+            logger.info("Login successful for Email: {}", login.getEmail());
+            return ResponseEntity.ok(customer);
+        } else {
+            logger.warn("Invalid email or password for Email: {}", login.getEmail());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
+        }
+    }
+
+    // Retrieve loans based on type of loan
+    @GetMapping("/type/{typeOfLoan}")
+    public ResponseEntity<?> getLoanType(@PathVariable("typeOfLoan") String typeOfLoan) {
+        logger.debug("Retrieving loans for type: {}", typeOfLoan);
+        
+        try {
+            List<Loan> loans = customerService.getLoansByType(typeOfLoan);
+            if (loans.isEmpty()) {
+                logger.info("No loans found for type: {}", typeOfLoan);
+                return new ResponseEntity<>("No loan found", HttpStatus.NOT_FOUND);
+            } else {
+                logger.info("Loans retrieved successfully for type: {}", typeOfLoan);
+                return new ResponseEntity<>(loans, HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            logger.error("Unexpected error while retrieving loans for type: {}", typeOfLoan, e);
+            return new ResponseEntity<>("Unexpected Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // Retrieve all loans
+    @GetMapping("/types")
+    public ResponseEntity<?> getAllLoans() {
+        logger.debug("Retrieving all loans");
+        
+        try {
+            List<Loan> loans = customerService.getAllLoans();
+            logger.info("All loans retrieved successfully");
+            return new ResponseEntity<>(loans, HttpStatus.OK);
+        } catch (LoanNotFoundException e) {
+            logger.warn("No loans found: {}", e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (RuntimeException e) {
+            logger.error("Unexpected error while retrieving all loans: {}", e.getMessage(), e);
+            return new ResponseEntity<>("Unexpected Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // Apply for loan
+    @PostMapping("/{customerId}/apply")
+    public ResponseEntity<String> applyForLoan(
+            @PathVariable Long customerId,
+            @RequestBody LoanApplicationRequest request) {
+        logger.debug("Received loan application request for customerId: {} with loanId: {}", customerId, request.getLoanId());
+
+        String result = loanApplicationStatusService.applyForLoan(customerId, request.getLoanId());
+
+        if (result.contains("submitted successfully")) {
+            logger.info("Loan application for customerId: {} with loanId: {} submitted successfully.", customerId, request.getLoanId());
+            return ResponseEntity.ok(result);
+        } else if (result.contains("not found")) {
+            logger.warn("Loan with ID {} not found for customerId: {}", request.getLoanId(), customerId);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
+        } else {
+            logger.error("Error occurred while applying for loan. Result: {}", result);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
+        }
     }
 }
-
-//retrieving all loans
-@GetMapping("/types")
-public ResponseEntity<?> getAllLoans() {
-    try {
-        List<Loan> loans = customerService.getAllLoans();
-        return new ResponseEntity<>(loans, HttpStatus.OK);
-    } catch (LoanNotFoundException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-    } catch (RuntimeException e) {
-        // Log the error
-        return new ResponseEntity<>("Unexpected Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-}
-//apply for loan
-@PostMapping("/{customerId}/apply")
-public ResponseEntity<String> applyForLoan(
-        @PathVariable Long customerId,
-        @RequestBody LoanApplicationRequest request) {
-
-    Integer loanId = request.getLoanId();
-    logger.info("Received loan application request for customerId: {} with loanId: {}", customerId, loanId);
-
-    String result = loanApplicationStatusService.applyForLoan(customerId, loanId);
-
-    if (result.contains("submitted successfully")) {
-        logger.info("Loan application for customerId: {} with loanId: {} submitted successfully.", customerId, loanId);
-        return ResponseEntity.ok(result);
-    } else if (result.contains("not found")) {
-        logger.warn("Loan with ID {} not found for customerId: {}", loanId, customerId);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
-    } else {
-        logger.error("Error occurred while applying for loan. Result: {}", result);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
-    }
-}
-
-
-}
-
-
