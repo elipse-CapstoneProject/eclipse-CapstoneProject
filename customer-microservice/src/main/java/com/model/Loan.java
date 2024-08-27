@@ -92,6 +92,12 @@ import jakarta.persistence.Table;
 		    HOME, PERSONAL, STUDENT,BUSINESS
 		}
 
+
+		public boolean isValid() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
 	    
 	    
 }

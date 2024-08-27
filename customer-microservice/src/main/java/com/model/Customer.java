@@ -43,9 +43,7 @@ public class Customer {
 
 	    @Column(name = "address", columnDefinition = "TEXT")
 	    private String address;
-	    
-	  /*  @OneToMany(mappedBy="customer",cascade=CascadeType.ALL,fetch = FetchType.EAGER)	
-		private List<LoanApplicationStatus> loanstatus;*/
+	  
 
 		public Long getCustomerId() {
 			return customerId;
@@ -119,19 +117,12 @@ public class Customer {
 			this.address = address;
 		}
 
-	/*	public List<LoanApplicationStatus> getLoanstatus() {
-			return loanstatus;
-		}
-
-		public void setLoanstatus(List<LoanApplicationStatus> loanstatus) {
-			this.loanstatus = loanstatus;
-		}*/
+	
 
 		public Customer( String customerName, String email, String dateOfBirth, String gender,
 				String password, String phoneNumber, String panCardNumber, String address,
 				List<LoanApplicationStatus> loanstatus) {
 			super();
-			//this.customerId = customerId;
 			this.customerName = customerName;
 			this.email = email;
 			this.dateOfBirth = dateOfBirth;
@@ -140,7 +131,6 @@ public class Customer {
 			this.phoneNumber = phoneNumber;
 			this.panCardNumber = panCardNumber;
 			this.address = address;
-		//	this.loanstatus = loanstatus;
 		}
 
 		public Customer() {
