@@ -1,48 +1,61 @@
 package com.model;
 
+import java.time.LocalDate;
 import java.util.List;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 @Entity
 @Table(name="customer")
 public class Customer {
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="customer_id")
+    private Long customerId;
 
-	    @Id
-	    @GeneratedValue(strategy = GenerationType.IDENTITY)
-	    @Column(name="customer_id")
-	    private Long customerId;
+    @Column(name ="customer_name", nullable=false)
+    @NotBlank(message = "Customer Name cannot be blank")
+    private String customerName;
 
-	    @Column(name ="customer_name", nullable=false)
-	    private String customerName;
+    @Column(name = "email")
+    @Email(message = "Email should be valid format")
+    @NotBlank(message = "Email cannot be blank")
+    private String email;
 
-	    @Column(name = "email")
-	    private String email;
+    @Column(name = "date_of_birth")
+    @Past(message = "Date of birth must be in the past")
+    private LocalDate dateOfBirth;
 
-	    @Column(name = "date_of_birth")
-	    private String dateOfBirth;
+    @Column(name = "gender")
+    @NotBlank(message = "Gender cannot be blank")
+    @Pattern(regexp = "^(Male|Female|Other)$", message = "Gender must be Male, Female, or Other")
+    private String gender;
 
-	    @Column(name = "gender")
-	    private String gender;
+    @Column(name = "password")
+    @NotBlank(message = "Password cannot be blank")
+    @Size(min = 8, message = "Password should be at least 8 characters long")
+    private String password;
 
-	    @Column(name = "password")
-	    private String password;
+    @Column(name = "phone_number")
+    @Pattern(regexp = "\\d{10}", message = "Phone number should be 10 digits")
+    private String phoneNumber;
 
-	    @Column(name = "phone_number")
-	    private String phoneNumber;
+    @Column(name = "pan_card_number")
+    @Pattern(regexp = "[A-Z]{5}\\d{4}[A-Z]{1}", message = "PAN card number should be in Correct format")
+    private String panCardNumber;
 
-	    @Column(name = "pan_card_number")
-	    private String panCardNumber;
-
-	    @Column(name = "address", columnDefinition = "TEXT")
-	    private String address;
+    @Column(name = "address", columnDefinition = "TEXT")
+    @NotBlank(message = "Address cannot be blank")
+    private String address;
 	  
 
 		public Long getCustomerId() {
@@ -69,11 +82,11 @@ public class Customer {
 			this.email = email;
 		}
 
-		public String getDateOfBirth() {
+		public @Past(message = "Date of birth must be in the past") LocalDate getDateOfBirth() {
 			return dateOfBirth;
 		}
 
-		public void setDateOfBirth(String dateOfBirth) {
+		public void setDateOfBirth(@Past(message = "Date of birth must be in the past") LocalDate dateOfBirth) {
 			this.dateOfBirth = dateOfBirth;
 		}
 
@@ -119,7 +132,7 @@ public class Customer {
 
 	
 
-		public Customer( String customerName, String email, String dateOfBirth, String gender,
+		public Customer( String customerName, String email, @Past(message = "Date of birth must be in the past") LocalDate dateOfBirth, String gender,
 				String password, String phoneNumber, String panCardNumber, String address,
 				List<LoanApplicationStatus> loanstatus) {
 			super();

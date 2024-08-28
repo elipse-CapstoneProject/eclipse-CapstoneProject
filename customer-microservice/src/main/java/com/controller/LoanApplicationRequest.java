@@ -1,15 +1,18 @@
 package com.controller;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 public class LoanApplicationRequest {
 
-	private Integer loanId;
-	private Long customerId;
+	@NotNull(message = "Loan ID cannot be null")
+    @Positive(message = "Loan ID must be a positive number")
+    private Integer loanId;
+
+    @NotNull(message = "Customer ID cannot be null")
+    @Positive(message = "Customer ID must be a positive number")
+    private Long customerId;
+
 	public Integer getLoanId() {
 		return loanId;
 	}

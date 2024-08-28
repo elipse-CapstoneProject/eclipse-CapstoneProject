@@ -39,7 +39,7 @@ LoanApplicationStatusRepository loanApplicationStatusRepository;
 RestTemplate restTemplate;
 private  String baseUrl = "http://loanservice/loans";
 private static final Logger logger = LoggerFactory.getLogger(CustomerService.class);
-
+//register
 public boolean existsByPanCardNumber(String panCardNumber) {
     boolean exists = customerRepository.existsByPanCardNumber(panCardNumber);
     logger.debug("Check if PAN Card Number {} exists: {}", panCardNumber, exists);
@@ -56,7 +56,7 @@ public Customer addNewCustomer(@Valid Customer customer) {
     logger.debug("Adding new customer with Email: {}", customer.getEmail());
     return customerRepository.save(customer);
 }
-
+//login
 public String authenticate(String email, String password) {
     logger.debug("Authenticating user with Email: {}", email);
     Customer customer = customerRepository.findByEmail(email);
@@ -67,7 +67,7 @@ public String authenticate(String email, String password) {
     logger.warn("Authentication failed for Email: {}", email);
     return null;
 }
-
+//retrieving based on typeofloan
 public List<Loan> getLoansByType(String typeOfLoan) {
     String typeOfLoanUpperCase = typeOfLoan.toUpperCase();
     String url = baseUrl + "/type/" + typeOfLoanUpperCase;
@@ -95,7 +95,7 @@ public List<Loan> getLoansByType(String typeOfLoan) {
         throw new RuntimeException("Error occurred while fetching loans for type " + typeOfLoanUpperCase, e);
     }
 }
-
+//retrieving all loans
 public List<Loan> getAllLoans() {
     String url = baseUrl + "/types";
     logger.debug("Fetching all loans from URL: {}", url);
@@ -119,6 +119,11 @@ public List<Loan> getAllLoans() {
         logger.error("Error fetching loans: {}", e.getMessage(), e);
         throw new RuntimeException("Error fetching loans: " + e.getMessage(), e);
     }
+}
+
+public boolean existsById(Long customerId) {
+	// TODO Auto-generated method stub
+	return false;
 }
 }
 

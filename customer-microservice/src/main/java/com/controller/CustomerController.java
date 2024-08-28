@@ -1,6 +1,7 @@
 package com.controller;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,16 +41,12 @@ import jakarta.validation.Valid;
 @RequestMapping("/customers")
 public class CustomerController {
     
+    @Autowired
+    CustomerService customerService;
+    @Autowired
+    LoanApplicationStatusService loanApplicationStatusService;
     private static final Logger logger = LoggerFactory.getLogger(CustomerController.class);
-    
-    private final CustomerService customerService;
-    private final LoanApplicationStatusService loanApplicationStatusService;
-    
-    public CustomerController(CustomerService customerService, LoanApplicationStatusService loanApplicationStatusService) {
-        this.customerService = customerService;
-        this.loanApplicationStatusService = loanApplicationStatusService;
-    }
-    
+
     // Register
     @PostMapping
     public ResponseEntity<?> registerCustomer(@Valid @RequestBody Customer customer) {
@@ -108,9 +105,11 @@ public class CustomerController {
             }
         } catch (Exception e) {
             logger.error("Unexpected error while retrieving loans for type: {}", typeOfLoan, e);
-            return new ResponseEntity<>("Unexpected Error", HttpStatus.INTERNAL_SERVER_ERROR);
+            String errorMessage = String.format("No loan found for type: %s", typeOfLoan);
+            return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
     // Retrieve all loans
     @GetMapping("/types")
@@ -150,4 +149,28 @@ public class CustomerController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
         }
     }
+   
+    
+    @GetMapping("/{customerId}/applications")
+    public ResponseEntity<?> getApplicationsByCustomerId(@PathVariable Long customerId) {
+        logger.info("Received request to get loan applications for customer ID: {}", customerId);
+        if (customerId == null || customerId <= 0) {
+            logger.warn("Invalid customer ID provided: {}", customerId);
+            return ResponseEntity.badRequest().body("Invalid customer ID provided.");
+        }
+        try {
+            List<LoanApplicationStatus> applications = loanApplicationStatusService.getApplicationsByCustomerId(customerId);
+            if (applications.isEmpty()) {
+                logger.warn("No loan applications found for customer ID: {}", customerId);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                     .body("No loan applications found for customer ID " + customerId + ".");
+            }
+            return ResponseEntity.ok(applications);
+        } catch (Exception e) {
+            logger.error("An error occurred while retrieving loan application data for customer ID: {}", customerId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body("An error occurred while retrieving loan application data: " + e.getMessage());
+        }
+    }
+
 }

@@ -1,6 +1,8 @@
 package com.model;
 
 
+import com.google.protobuf.Timestamp;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -9,28 +11,37 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 
 @Entity
 @Table(name = "loanapplicationstatus")
 public class LoanApplicationStatus {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="application_id")
-    private Long applicationId;
+	 @Id
+	    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	    @Column(name="application_id")
+	    private Long applicationId;
 
-    @Column(name="customer_id")
-    private Long customerId;
+	    @Column(name="customer_id", nullable = false)
+	    @NotNull(message = "Customer ID cannot be null")
+	    private Long customerId;
 
-    @Column(name="loan_id",nullable = false)
-    private Integer loanId;
+	    @Column(name="loan_id", nullable = false)
+	    @NotNull(message = "Loan ID cannot be null")
+	    @Min(value = 1, message = "Loan ID must be a positive integer")
+	    private Integer loanId;
 
-    @Column(name = "application_date", nullable = false)
-    private java.sql.Timestamp applicationDate;
+	    @Column(name = "application_date", nullable = false)
+	    @NotNull(message = "Application date cannot be null")
+	    @PastOrPresent(message = "Application date must be in the past or present")
+	    private java.sql.Timestamp applicationDate;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Status status;
+	    @Enumerated(EnumType.STRING)
+	    @Column(nullable = false)
+	    @NotNull(message = "Status cannot be null")
+	    private Status status;
 
     public enum Status {
         PENDING, APPROVED, REJECTED

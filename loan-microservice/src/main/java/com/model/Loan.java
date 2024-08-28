@@ -10,26 +10,41 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
 	@Entity
 	@Table(name = "Loan")
 	public class Loan {
 
-	    @Id
+		@Id
 	    @GeneratedValue(strategy = GenerationType.IDENTITY)
-	    @Column(name="loan_id")
+	    @Column(name = "loan_id")
 	    private int loanId;
 
 	    @Enumerated(EnumType.STRING)
-	    @Column(name="type_of_loan")
+	    @Column(name = "type_of_loan", nullable = false)
+	    @NotNull(message = "Type of loan cannot be null")
 	    private LoanType typeOfLoan;
-        @Column(name="interest_rate")
+
+	    @Column(name = "interest_rate", nullable = false)
+	    @NotNull(message = "Interest rate cannot be null")
 	    private BigDecimal interestRate;
-        @Column(name="term_months")
+
+	    @Column(name = "term_months", nullable = false)
+	    @Min(value = 5, message = "Term months must be at least 5")
+	    @Max(value = 360, message = "Term months cannot be more than 360") 
 	    private int termMonths;
-        @Column(name="max_amount")
+
+	    @Column(name = "max_amount", nullable = false)
+	    @NotNull(message = "Maximum amount cannot be null")
 	    private BigDecimal maxAmount;
-        @Column(name="min_amount")
+
+	    @Column(name = "min_amount", nullable = false)
+	    @NotNull(message = "Minimum amount cannot be null")
 	    private BigDecimal minAmount;
 		public int getLoanId() {
 			return loanId;
@@ -135,14 +150,14 @@ public class Loan {
     }
 
     public enum HomeLoanOption {
-        HOME_PURCHASE_LOAN,
-        HOME_IMPROVEMENT_LOAN,
-        LAND_PURCHASE_LOAN
+        HOMEPURCHASELOAN,
+        HOMEIMPROVEMENTLOAN,
+        LANDPURCHASELOAN
     }
 
     public enum StudentLoanOption {
-        FEDERAL_DIRECT_SUBSIDIZED_LOAN_UNDERGRADUATE,
-        FEDERAL_DIRECT_SUBSIDIZED_LOAN_GRADUATE
+        FEDERALDIRECTSUBSIDIZEDLOANUNDERGRADUATE,
+        FEDERALDIRECTSUBSIDIZEDLOANGRADUATE
     }
 
     // Getters and Setters

@@ -15,4 +15,6 @@ public interface LoanApplicationStatusRepository extends CrudRepository<LoanAppl
 		return false;
 	}
 
+Optional<LoanApplicationStatus> findByApplicationId(Long applicationId);
+List<LoanApplicationStatus> findByCustomerId(Long customerId);
 }
