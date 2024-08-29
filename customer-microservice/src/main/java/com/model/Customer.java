@@ -42,7 +42,7 @@ public class Customer {
 
     @Column(name = "password")
     @NotBlank(message = "Password cannot be blank")
-    @Size(min = 8, message = "Password should be at least 8 characters long")
+    @Size(min = 8,max=12, message = "Password should be at least 8 characters long")
     private String password;
 
     @Column(name = "phone_number")

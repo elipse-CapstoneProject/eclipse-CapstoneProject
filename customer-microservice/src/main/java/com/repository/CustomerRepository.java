@@ -22,6 +22,8 @@ public interface CustomerRepository extends CrudRepository<Customer, Integer> {
     boolean existsByEmail(String email);
 
 	void save(LoanApplicationStatus loanApplication);
+
+	boolean existsByCustomerId(Long customerId);
 	
 
 
