@@ -15,8 +15,6 @@ import com.model.LoanApplicationStatus;
 public interface CustomerRepository extends CrudRepository<Customer, Integer> {
    
 	 Customer findByEmail(String email);
-	//Optional<Customer> findById(Long customerId);
-	
     //register
     boolean existsByPanCardNumber(String panCardNumber);
     boolean existsByEmail(String email);
@@ -25,8 +23,6 @@ public interface CustomerRepository extends CrudRepository<Customer, Integer> {
 
 	boolean existsByCustomerId(Long customerId);
 	
-
-
 
 
 }

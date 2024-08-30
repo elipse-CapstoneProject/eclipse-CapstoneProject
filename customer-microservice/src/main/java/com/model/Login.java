@@ -8,13 +8,9 @@ import jakarta.validation.constraints.Size;
 public class Login {
 
 	@Column(name = "email", nullable = false, unique = true)
-    @NotBlank(message = "Email is mandatory")
-    @Email(message = "Invalid email format")
     private String email;
 
     @Column(name = "password", nullable = false)
-    @NotBlank(message = "Password is mandatory")
-    @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;
 	public String getEmail() {
 		return email;

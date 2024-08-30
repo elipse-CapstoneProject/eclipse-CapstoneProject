@@ -28,17 +28,14 @@ LoanApplicationStatusRepository loanApplicationStatusRepository;
 RestTemplate restTemplate;
 private  String baseUrl = "http://loanservice/loans";
 private static final Logger logger = LoggerFactory.getLogger(LoanApplicationStatusService.class);
-
 //apply for loan
 public String applyForLoan(Long customerId, Integer loanId) {
     if (!customerRepository.existsByCustomerId(customerId)) {
         logger.warn("Customer with ID {} not found", customerId);
         return "Customer with ID " + customerId + " not found.";
     }
-
     String loanUrl = baseUrl + "/id/" + loanId;
     logger.debug("Loan URL is: {}", loanUrl);
-
     try {
         ResponseEntity<Loan> response = restTemplate.getForEntity(loanUrl, Loan.class);
         if (response.getStatusCode() == HttpStatus.OK) {
@@ -59,23 +56,18 @@ public String applyForLoan(Long customerId, Integer loanId) {
         return "An error occurred while applying for the loan: " + e.getMessage();
     }
 }
-
 public List<LoanApplicationStatus> getApplicationsByCustomerId(Long customerId) {
     if (customerId == null) {
         logger.error("Customer ID must not be null");
         throw new IllegalArgumentException("Customer ID must not be null");
     }
-    
     logger.info("Fetching loan applications for customer ID: {}", customerId);
     List<LoanApplicationStatus> loanApplications = loanApplicationStatusRepository.findByCustomerId(customerId);
-    
     if (loanApplications.isEmpty()) {
         logger.warn("No loan applications found for customer ID: {}", customerId);
     } else {
         logger.info("Loan applications found: {}", loanApplications);
     }
-    
     return loanApplications;  
 }
-
 }
